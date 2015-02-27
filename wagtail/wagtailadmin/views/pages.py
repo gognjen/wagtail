@@ -243,6 +243,138 @@ def create(request, content_type_app_name, content_type_model_name, parent_page_
         'form': form, # Used in unit tests
     })
 
+def translate(request, page_id):
+    latest_revision = get_object_or_404(Page, id=page_id).get_latest_revision()
+    page = get_object_or_404(Page, id=page_id).get_latest_revision_as_page()
+    parent = page.get_parent()
+
+    content_type = ContentType.objects.get_for_model(page)
+
+    page_perms = page.permissions_for_user(request.user)
+    if not page_perms.can_edit():
+        raise PermissionDenied
+
+    edit_handler_class = get_page_edit_handler(page.__class__)
+    form_class = edit_handler_class.get_form_class(page.__class__)
+
+    errors_debug = None
+
+    if request.POST:
+        form = form_class(request.POST, request.FILES, instance=page)
+
+        # Stick an extra validator into the form to make sure that the slug is not already in use
+        def clean_slug(slug):
+            # Make sure the slug isn't already in use
+            if parent.get_children().filter(slug=slug).exclude(id=page_id).count() > 0:
+                raise ValidationError(_("This slug is already in use"))
+            return slug
+        form.fields['slug'].clean = clean_slug
+
+        # Stick another validator into the form to check that the scheduled publishing settings are set correctly
+        def clean():
+            cleaned_data = form_class.clean(form)
+
+            # Go live must be before expire
+            go_live_at = cleaned_data.get('go_live_at')
+            expire_at = cleaned_data.get('expire_at')
+
+            if go_live_at and expire_at:
+                if go_live_at > expire_at:
+                    msg = _('Go live date/time must be before expiry date/time')
+                    form._errors['go_live_at'] = form.error_class([msg])
+                    form._errors['expire_at'] = form.error_class([msg])
+                    del cleaned_data['go_live_at']
+                    del cleaned_data['expire_at']
+
+            # Expire must be in the future
+            expire_at = cleaned_data.get('expire_at')
+
+            if expire_at and expire_at < timezone.now():
+                form._errors['expire_at'] = form.error_class([_('Expiry date/time must be in the future')])
+                del cleaned_data['expire_at']
+
+            return cleaned_data
+        form.clean = clean
+
+        if form.is_valid() and not page.locked:
+            page = form.save(commit=False)
+
+            is_publishing = bool(request.POST.get('action-publish')) and page_perms.can_publish()
+            is_submitting = bool(request.POST.get('action-submit'))
+
+            # Save revision
+            revision = page.save_revision(
+                user=request.user,
+                submitted_for_moderation=is_submitting,
+            )
+
+            # Publish
+            if is_publishing:
+                revision.publish()
+            else:
+                # Set has_unpublished_changes flag
+                if page.live:
+                    # To avoid overwriting the live version, we only save the page
+                    # to the revisions table
+                    Page.objects.filter(id=page.id).update(has_unpublished_changes=True)
+                else:
+                    page.has_unpublished_changes = True
+                    page.save()
+
+            # Notifications
+            if is_publishing:
+                messages.success(request, _("Page '{0}' published.").format(page.title), buttons=[
+                    messages.button(page.url, _('View live')),
+                    messages.button(reverse('wagtailadmin_pages_edit', args=(page_id,)), _('Edit'))
+                ])
+            elif is_submitting:
+                messages.success(request, _("Page '{0}' submitted for moderation.").format(page.title), buttons=[
+                    messages.button(reverse('wagtailadmin_pages_view_draft', args=(page_id,)), _('View draft')),
+                    messages.button(reverse('wagtailadmin_pages_edit', args=(page_id,)), _('Edit'))
+                ])
+                tasks.send_notification.delay(page.get_latest_revision().id, 'submitted', request.user.id)
+            else:
+                messages.success(request, _("Page '{0}' updated.").format(page.title))
+
+            for fn in hooks.get_hooks('after_edit_page'):
+                result = fn(request, page)
+                if hasattr(result, 'status_code'):
+                    return result
+
+            if is_publishing or is_submitting:
+                # we're done here - redirect back to the explorer
+                return redirect('wagtailadmin_explore', page.get_parent().id)
+            else:
+                # Just saving - remain on edit page for further edits
+                return redirect('wagtailadmin_pages_edit', page.id)
+        else:
+            if page.locked:
+                messages.error(request, _("The page could not be saved as it is locked"))
+            else:
+                messages.error(request, _("The page could not be saved due to validation errors"))
+
+            edit_handler = edit_handler_class(instance=page, form=form)
+            errors_debug = (
+                repr(edit_handler.form.errors)
+                + repr([(name, formset.errors) for (name, formset) in edit_handler.form.formsets.items() if formset.errors])
+            )
+    else:
+        form = form_class(instance=page)
+        edit_handler = edit_handler_class(instance=page, form=form)
+
+    # Check for revisions still undergoing moderation and warn
+    if latest_revision and latest_revision.submitted_for_moderation:
+        messages.warning(request, _("This page is currently awaiting moderation"))
+
+    return render(request, 'wagtailadmin/pages/edit.html', {
+        'page': page,
+        'content_type': content_type,
+        'edit_handler': edit_handler,
+        'errors_debug': errors_debug,
+        'preview_modes': page.preview_modes,
+        'form': form, # Used in unit tests
+    })
+
 
 def edit(request, page_id):
     latest_revision = get_object_or_404(Page, id=page_id).get_latest_revision()
