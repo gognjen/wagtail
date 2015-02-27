@@ -57,14 +57,14 @@
                 </li>
                 <li class="actions">
                     <div class="dropdown dropup dropdown-button">
-                        <input type="submit" value="{% trans 'Translate' %}" class="button" {% if page.locked %}disabled {% endif %} />
+                        <input type="button" value="{% trans 'Translate from Serbian' %}" class="button" {% if page.locked %}disabled {% endif %} />
                         
                         {% if not page.locked %}
                             <div class="dropdown-toggle icon icon-arrow-up"></div>
                             <ul role="menu">
-                                <li><a href="#">{% trans 'From Serbian' %}</a></li>
-                                <li><a href="#">{% trans 'From Croatian' %}</a></li>
-                                <li><a href="#">{% trans 'From Bosnian' %}</a></li>
+                                <li><a href="#">{% trans 'Translate from Croatian' %}</a></li>
+                                <li><a href="#">{% trans 'Translate from Bosnian' %}</a></li>
+                                <li><a href="#">{% trans 'Revert original' %}</a></li>
                             </ul>
                         {% endif %}
                     </div>
