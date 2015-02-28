@@ -307,12 +307,15 @@ def edit(request, page_id):
             is_translating_from_bosnian = bool(request.POST.get('action-translate-bosnian'))
             is_translating_from_croatian = bool(request.POST.get('action-translate-croatian'))
         
+            google_api_key = os.environ.get('GOOGLE_KEY_ID')
+        
             if is_translating_from_serbian:    
                 from apiclient.discovery import build
                 # Build a service object for interacting with the API. Visit
                 # the Google APIs Console <http://code.google.com/apis/console>
                 # to get an API key for your own application.
-                service = build('translate', 'v2', developerKey='AIzaSyDRRpR3GS1F1_jKNNM9HCNd2wJQyPG3oN0')
+                
+                service = build('translate', 'v2', developerKey=google_api_key)
                 print service.translations().list(
                     source='sr',
                     target='en',
@@ -324,7 +327,7 @@ def edit(request, page_id):
                 # Build a service object for interacting with the API. Visit
                 # the Google APIs Console <http://code.google.com/apis/console>
                 # to get an API key for your own application.
-                service = build('translate', 'v2', developerKey='AIzaSyDRRpR3GS1F1_jKNNM9HCNd2wJQyPG3oN0')
+                service = build('translate', 'v2', developerKey=google_api_key)
                 print service.translations().list(
                     source='bs',
                     target='en',
@@ -336,7 +339,7 @@ def edit(request, page_id):
                 # Build a service object for interacting with the API. Visit
                 # the Google APIs Console <http://code.google.com/apis/console>
                 # to get an API key for your own application.
-                service = build('translate', 'v2', developerKey='AIzaSyDRRpR3GS1F1_jKNNM9HCNd2wJQyPG3oN0')
+                service = build('translate', 'v2', developerKey=google_api_key)
                 print service.translations().list(
                     source='hr',
                     target='en',
