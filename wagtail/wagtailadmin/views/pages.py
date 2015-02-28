@@ -244,6 +244,7 @@ def create(request, content_type_app_name, content_type_model_name, parent_page_
     })
 
 def translate(request, page_id):
+    from apiclient.discovery import build
     # Build a service object for interacting with the API. Visit
     # the Google APIs Console <http://code.google.com/apis/console>
     # to get an API key for your own application.
