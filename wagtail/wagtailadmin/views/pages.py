@@ -306,7 +306,8 @@ def edit(request, page_id):
             is_translating_from_serbian = bool(request.POST.get('action-translate-serbian'))
             is_translating_from_bosnian = bool(request.POST.get('action-translate-bosnian'))
             is_translating_from_croatian = bool(request.POST.get('action-translate-croatian'))
-        
+            
+            import os
             google_api_key = os.environ.get('GOOGLE_KEY_ID')
         
             if is_translating_from_serbian:    
