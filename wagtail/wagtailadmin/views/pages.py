@@ -242,20 +242,6 @@ def create(request, content_type_app_name, content_type_model_name, parent_page_
         'preview_modes': page.preview_modes,
         'form': form, # Used in unit tests
     })
-
-def translate(request, page_id):
-    from apiclient.discovery import build
-    # Build a service object for interacting with the API. Visit
-    # the Google APIs Console <http://code.google.com/apis/console>
-    # to get an API key for your own application.
-    service = build('translate', 'v2', developerKey='AIzaSyDRRpR3GS1F1_jKNNM9HCNd2wJQyPG3oN0')
-    print service.translations().list(
-        source='sr',
-        target='en',
-        q=[request.POST['title'], request.POST['intro'], request.POST['body']]
-    ).execute()
-    
-    edit(request, page_id)
     
 
 def edit(request, page_id):
@@ -316,6 +302,46 @@ def edit(request, page_id):
 
             is_publishing = bool(request.POST.get('action-publish')) and page_perms.can_publish()
             is_submitting = bool(request.POST.get('action-submit'))
+            
+            is_translating_from_serbian = bool(request.POST.get('action-translate-serbian'))
+            is_translating_from_bosnian = bool(request.POST.get('action-translate-bosnian'))
+            is_translating_from_croatian = bool(request.POST.get('action-translate-croatian'))
+        
+            if is_translating_from_serbian:    
+                from apiclient.discovery import build
+                # Build a service object for interacting with the API. Visit
+                # the Google APIs Console <http://code.google.com/apis/console>
+                # to get an API key for your own application.
+                service = build('translate', 'v2', developerKey='AIzaSyDRRpR3GS1F1_jKNNM9HCNd2wJQyPG3oN0')
+                print service.translations().list(
+                    source='sr',
+                    target='en',
+                    q=[request.POST.get('title'), request.POST.get('intro'), request.POST.get('body')]
+                ).execute()
+            
+            if is_translating_from_bosnian:    
+                from apiclient.discovery import build
+                # Build a service object for interacting with the API. Visit
+                # the Google APIs Console <http://code.google.com/apis/console>
+                # to get an API key for your own application.
+                service = build('translate', 'v2', developerKey='AIzaSyDRRpR3GS1F1_jKNNM9HCNd2wJQyPG3oN0')
+                print service.translations().list(
+                    source='bs',
+                    target='en',
+                    q=[request.POST['title'], request.POST['intro'], request.POST['body']]
+                ).execute()            
+        
+            if is_translating_from_croatian:    
+                from apiclient.discovery import build
+                # Build a service object for interacting with the API. Visit
+                # the Google APIs Console <http://code.google.com/apis/console>
+                # to get an API key for your own application.
+                service = build('translate', 'v2', developerKey='AIzaSyDRRpR3GS1F1_jKNNM9HCNd2wJQyPG3oN0')
+                print service.translations().list(
+                    source='hr',
+                    target='en',
+                    q=[request.POST['title'], request.POST['intro'], request.POST['body']]
+                ).execute()
 
             # Save revision
             revision = page.save_revision(
