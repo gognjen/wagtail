@@ -298,11 +298,6 @@ def edit(request, page_id):
         form.clean = clean
 
         if form.is_valid() and not page.locked:
-            page = form.save(commit=False)
-
-            is_publishing = bool(request.POST.get('action-publish')) and page_perms.can_publish()
-            is_submitting = bool(request.POST.get('action-submit'))
-            
             is_translating_from_serbian = bool(request.POST.get('action-translate-serbian'))
             is_translating_from_bosnian = bool(request.POST.get('action-translate-bosnian'))
             is_translating_from_croatian = bool(request.POST.get('action-translate-croatian'))
@@ -341,11 +336,19 @@ def edit(request, page_id):
                 # the Google APIs Console <http://code.google.com/apis/console>
                 # to get an API key for your own application.
                 service = build('translate', 'v2', developerKey=google_api_key)
-                print service.translations().list(
+                translation = service.translations().list(
                     source='hr',
                     target='en',
                     q=[request.POST['title'], request.POST['intro'], request.POST['body']]
                 ).execute()
+                translation['translations'][0]['translatedText']
+            
+            page = form.save(commit=False)
+
+            is_publishing = bool(request.POST.get('action-publish')) and page_perms.can_publish()
+            is_submitting = bool(request.POST.get('action-submit'))
+            
+
 
             # Save revision
             revision = page.save_revision(
