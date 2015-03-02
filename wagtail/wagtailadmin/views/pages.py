@@ -309,6 +309,9 @@ def edit(request, page_id):
             
             import os
             google_api_key = os.environ.get('GOOGLE_KEY_ID')
+            
+            import HTMLParser
+            html_parser = HTMLParser.HTMLParser()
         
             if is_translating_from_serbian:    
                 from apiclient.discovery import build
@@ -322,9 +325,9 @@ def edit(request, page_id):
                     target='en',
                     q=[request.POST.get('source_title'), request.POST.get('source_intro'), request.POST.get('source_body')]
                 ).execute()
-                page.title = translation['translations'][0]['translatedText']
-                page.intro = translation['translations'][1]['translatedText']
-                page.body = translation['translations'][2]['translatedText']
+                page.title = html_parser.unescape(translation['translations'][0]['translatedText'])
+                page.intro = html_parser.unescape(translation['translations'][1]['translatedText'])
+                page.body = html_parser.unescape(translation['translations'][2]['translatedText'])
                 page.save()
             
             if is_translating_from_bosnian:    
@@ -338,9 +341,9 @@ def edit(request, page_id):
                     target='en',
                     q=[request.POST.get('source_title'), request.POST.get('source_intro'), request.POST.get('source_body')]
                 ).execute()
-                page.title = translation['translations'][0]['translatedText']
-                page.intro = translation['translations'][1]['translatedText']
-                page.body = translation['translations'][2]['translatedText']
+                page.title = html_parser.unescape(translation['translations'][0]['translatedText'])
+                page.intro = html_parser.unescape(translation['translations'][1]['translatedText'])
+                page.body = html_parser.unescape(translation['translations'][2]['translatedText'])
                 page.save()
         
             if is_translating_from_croatian:    
@@ -354,9 +357,9 @@ def edit(request, page_id):
                     target='en',
                     q=[request.POST.get('source_title'), request.POST.get('source_intro'), request.POST.get('source_body')]
                 ).execute()
-                page.title = translation['translations'][0]['translatedText']
-                page.intro = translation['translations'][1]['translatedText']
-                page.body = translation['translations'][2]['translatedText']
+                page.title = html_parser.unescape(translation['translations'][0]['translatedText'])
+                page.intro = html_parser.unescape(translation['translations'][1]['translatedText'])
+                page.body = html_parser.unescape(translation['translations'][2]['translatedText'])
                 page.save()
 
             # Save revision
