@@ -57,7 +57,7 @@ def search(
         query.add_hit()
         
         if(sort=='date'):
-            search_results = search_results.order_by('go_live_at')
+            search_results = search_results.order_by('specific__go_live_at')
             
         # Pagination
         paginator = Paginator(search_results, results_per_page)
