@@ -20,7 +20,7 @@ def search(
         search_title_only=False,
         extra_filters={},
         path=None,
-        sort='relavance',
+        sort=None,
     ):
 
     # Get default templates
