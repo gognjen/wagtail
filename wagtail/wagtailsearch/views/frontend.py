@@ -47,7 +47,8 @@ def search(
             show_unpublished=show_unpublished,
             search_title_only=search_title_only,
             extra_filters=extra_filters,
-            path=path if path else request.site.root_page.path
+            path=path if path else request.site.root_page.path,
+            sort=sort,
         )
 
         # Get query object
@@ -55,9 +56,6 @@ def search(
 
         # Add hit
         query.add_hit()
-        
-        if(sort=='date'):
-            search_results = search_results.get_queryset().order_by('go_live_at')
             
         # Pagination
         paginator = Paginator(search_results, results_per_page)
