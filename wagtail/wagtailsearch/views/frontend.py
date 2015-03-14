@@ -20,6 +20,7 @@ def search(
         search_title_only=False,
         extra_filters={},
         path=None,
+        sort='relavance',
     ):
 
     # Get default templates
@@ -54,7 +55,10 @@ def search(
 
         # Add hit
         query.add_hit()
-
+        
+        if(sort=='date'):
+            search_results = search_results.order_by('go_live_at')
+            
         # Pagination
         paginator = Paginator(search_results, results_per_page)
         try:
