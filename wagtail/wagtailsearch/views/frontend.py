@@ -20,7 +20,6 @@ def search(
         search_title_only=False,
         extra_filters={},
         path=None,
-        sort=None,
     ):
 
     # Get default templates
@@ -39,7 +38,8 @@ def search(
     # Get query string and page from GET paramters
     query_string = request.GET.get('q', '')
     page = request.GET.get('page', request.GET.get('p', 1))
-
+    sort = request.GET.get('sort', '')
+    
     # Search
     if query_string != '':
         search_results = models.Page.search(
