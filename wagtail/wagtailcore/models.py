@@ -587,7 +587,7 @@ class Page(six.with_metaclass(PageBase, MP_Node, ClusterableModel, index.Indexed
             return None
 
     @classmethod
-    def search(cls, query_string, show_unpublished=False, search_title_only=False, extra_filters={}, prefetch_related=[], path=None):
+    def search(cls, query_string, show_unpublished=False, search_title_only=False, extra_filters={}, prefetch_related=[], path=None, sort=None):
         # Filters
         filters = extra_filters.copy()
         if not show_unpublished:
@@ -604,7 +604,7 @@ class Page(six.with_metaclass(PageBase, MP_Node, ClusterableModel, index.Indexed
 
         # Search
         s = get_search_backend()
-        return s.search(query_string, cls, fields=fields, filters=filters, prefetch_related=prefetch_related)
+        return s.search(query_string, cls, fields=fields, filters=filters, prefetch_related=prefetch_related, sort=sort)
 
     @classmethod
     def clean_subpage_types(cls):
