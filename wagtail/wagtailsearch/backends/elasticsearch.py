@@ -199,6 +199,9 @@ class ElasticSearchQuery(BaseSearchQuery):
             return filter_out
 
     def to_es(self):
+        
+        
+        
         # Query
         if self.query_string is not None:
             fields = self.fields or ['_all', '_partials']
@@ -220,6 +223,8 @@ class ElasticSearchQuery(BaseSearchQuery):
             query = {
                 'match_all': {}
             }
+
+        
 
         # Filters
         filters = []
