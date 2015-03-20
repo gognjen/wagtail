@@ -18,10 +18,11 @@ class FieldError(Exception):
 
 
 class BaseSearchQuery(object):
-    def __init__(self, queryset, query_string, fields=None):
+    def __init__(self, queryset, query_string, fields=None, sort=None):
         self.queryset = queryset
         self.query_string = query_string
         self.fields = fields
+        self.sort = sort
 
     def _get_searchable_field(self, field_attname):
         # Get field
