@@ -199,7 +199,7 @@ class BaseSearch(object):
     def _search(self, queryset, query_string, fields=None):
         raise NotImplementedError
 
-    def search(self, query_string, model_or_queryset, fields=None, filters=None, prefetch_related=None):
+    def search(self, query_string, model_or_queryset, fields=None, filters=None, prefetch_related=None, sort=None):
         # Find model/queryset
         if isinstance(model_or_queryset, QuerySet):
             model = model_or_queryset.model
@@ -226,4 +226,4 @@ class BaseSearch(object):
                 queryset = queryset.prefetch_related(prefetch)
 
         # Search
-        return self._search(queryset, query_string, fields=fields)
+        return self._search(queryset, query_string, fields=fields, sort)
