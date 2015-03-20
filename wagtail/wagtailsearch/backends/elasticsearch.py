@@ -465,5 +465,5 @@ class ElasticSearch(BaseSearch):
         except NotFoundError:
             pass  # Document doesn't exist, ignore this exception
 
-    def _search(self, queryset, query_string, fields=None):
-        return ElasticSearchResults(self, ElasticSearchQuery(queryset, query_string, fields=fields))
+    def _search(self, queryset, query_string, fields=None, sort=None):
+        return ElasticSearchResults(self, ElasticSearchQuery(queryset, query_string, fields=fields, sort=sort))
