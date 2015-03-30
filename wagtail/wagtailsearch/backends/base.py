@@ -197,7 +197,7 @@ class BaseSearch(object):
     def delete(self, obj):
         raise NotImplementedError
 
-    def _search(self, queryset, query_string, fields=None):
+    def _search(self, queryset, query_string, fields=None, sort=None):
         raise NotImplementedError
 
     def search(self, query_string, model_or_queryset, fields=None, filters=None, prefetch_related=None, sort=None):
