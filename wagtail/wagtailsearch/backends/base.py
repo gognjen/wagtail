@@ -227,4 +227,4 @@ class BaseSearch(object):
                 queryset = queryset.prefetch_related(prefetch)
 
         # Search
-        return self._search(queryset, query_string, fields=fields, sort)
+        return self._search(queryset, query_string, fields=fields, sort=sort)
