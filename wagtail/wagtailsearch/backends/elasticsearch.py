@@ -267,7 +267,7 @@ class ElasticSearchResults(BaseSearchResults):
         # Params for elasticsearch query
         params = dict(
             index=self.backend.es_index,
-            body=dict(query=self.query.to_es(), sort={"sort": [ "_score" ]}),
+            body=dict(query=self.query.to_es(), sort=[ "_score" ]),
             _source=False,
             fields='pk',
             from_=self.start,
