@@ -251,16 +251,16 @@ class ElasticSearchQuery(BaseSearchQuery):
 
         if len(filters) == 1:
             query = {
+                'sort': sort,
                 'filtered': {
-                    'sort': sort,
                     'query': query,
                     'filter': filters[0],
                 }
             }
         elif len(filters) > 1:
             query = {
+                'sort': sort,
                 'filtered': {
-                    'sort': sort,
                     'query': query,
                     'filter': {
                         'and': filters,
