@@ -228,9 +228,7 @@ class ElasticSearchQuery(BaseSearchQuery):
         sort = []
         
         sort.append({ 
-            'go_live_at' : {
-                'order' : 'asc'
-            }
+            "_score"
         })
         
 
