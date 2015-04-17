@@ -225,6 +225,14 @@ class ElasticSearchQuery(BaseSearchQuery):
             }
 
         
+        sort = []
+        
+        sort.append({ 
+            'post_date' : {
+                'order' : 'asc'
+            }
+        })
+        
 
         # Filters
         filters = []
@@ -244,6 +252,7 @@ class ElasticSearchQuery(BaseSearchQuery):
         if len(filters) == 1:
             query = {
                 'filtered': {
+                    'sort': sort,
                     'query': query,
                     'filter': filters[0],
                 }
@@ -251,6 +260,7 @@ class ElasticSearchQuery(BaseSearchQuery):
         elif len(filters) > 1:
             query = {
                 'filtered': {
+                    'sort': sort,
                     'query': query,
                     'filter': {
                         'and': filters,
