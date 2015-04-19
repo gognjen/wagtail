@@ -200,14 +200,12 @@ class ElasticSearchQuery(BaseSearchQuery):
             return filter_out
 
     def sort_by(self):
-        print('*************************************')
-        print(self.sort)
-        sys.stdout.flush()
-        print('*************************************')
-        
-        if self.sort != 'date':
-            return [ { "date": { "order": "desc", "ignore_unmapped": True }}, { "_score": { "order": "desc" }} ]
+        if self.sort == 'date':
+            print('***** Sort by date *****')
+            sys.stdout.flush()
+            return [ { "date": { "order": "desc", "ignore_unmapped": True }} ]
         else:
+            print('***** Sort by relevance *****')
             return [ { "_score": { "order": "desc" }} ]
             
     def to_es(self):
