@@ -199,7 +199,11 @@ class ElasticSearchQuery(BaseSearchQuery):
             return filter_out
 
     def sort_by(self):
-        if self.sort == 'date':
+        print('*************************************')
+        print(self.sort)
+        print('*************************************')
+        
+        if self.sort != 'date':
             return [ { "date": { "order": "desc", "ignore_unmapped": True }}, { "_score": { "order": "desc" }} ]
         else:
             return [ { "_score": { "order": "desc" }} ]
