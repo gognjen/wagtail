@@ -267,7 +267,7 @@ class ElasticSearchResults(BaseSearchResults):
         # Params for elasticsearch query
         params = dict(
             index=self.backend.es_index,
-            body=dict(query=self.query.to_es(), sort=[ { "date": { "order": "desc", "ignore_unmapped": true }}, { "_score": { "order": "desc" }} ]),
+            body=dict(query=self.query.to_es(), sort=[ { "date": { "order": "desc", "ignore_unmapped": True }}, { "_score": { "order": "desc" }} ]),
             _source=False,
             fields='pk',
             from_=self.start,
