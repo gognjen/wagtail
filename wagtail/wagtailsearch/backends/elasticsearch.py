@@ -201,6 +201,7 @@ class ElasticSearchQuery(BaseSearchQuery):
     def sort_by(self):
         print('*************************************')
         print(self.sort)
+        sys.stdout.flush()
         print('*************************************')
         
         if self.sort != 'date':
