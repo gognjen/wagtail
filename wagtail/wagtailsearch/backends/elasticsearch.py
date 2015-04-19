@@ -198,10 +198,13 @@ class ElasticSearchQuery(BaseSearchQuery):
 
             return filter_out
 
+    def sort_by(self):
+        if self.sort is not None:
+            return [ { "date": { "order": "desc", "ignore_unmapped": True }}, { "_score": { "order": "desc" }} ]
+        else:
+            return [ { "_score": { "order": "desc" }} ]
+            
     def to_es(self):
-        
-        
-        
         # Query
         if self.query_string is not None:
             fields = self.fields or ['_all', '_partials']
@@ -267,7 +270,7 @@ class ElasticSearchResults(BaseSearchResults):
         # Params for elasticsearch query
         params = dict(
             index=self.backend.es_index,
-            body=dict(query=self.query.to_es(), sort=[ { "date": { "order": "desc", "ignore_unmapped": True }}, { "_score": { "order": "desc" }} ]),
+            body=dict(query=self.query.to_es(), sort=self.query.sort_by()),
             _source=False,
             fields='pk',
             from_=self.start,
